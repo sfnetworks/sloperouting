@@ -182,6 +182,41 @@ plot(p2, add=T, col="darkred")
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
+``` r
+
+
+# lets try with an UNDIRECTED GRAPH (results are different )
+net_und = as_sfnetwork(r, directed=F)
+
+path1_und = net_und %>%
+  activate("edges") %>%
+  mutate(weight = edge_length()) %>%
+  convert(to_spatial_shortest_paths, p2, p1)
+plot(path1_und)
+
+# Change the weight so that it is a product of edge_length and average slope.
+# I am not sure how to access the edge columns to see if this worked
+path2_und = net_und %>%
+  activate("edges") %>%
+  mutate(weight = edge_length() * Avg_Slope) %>%
+  convert(to_spatial_shortest_paths, p2, p1)
+plot(path2_und)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+
+``` r
+
+
+plot(r["Avg_Slope"], reset = F, lwd=3)
+plot(path1_und, add=T, col="red")
+plot(path2_und, add=T, col="green")
+plot(p1, add=T, col="darkred")
+plot(p2, add=T, col="darkred")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
+
 # Next step
 
 Gradient deterrence function.

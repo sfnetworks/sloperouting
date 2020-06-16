@@ -126,6 +126,7 @@ plot(r["Avg_Slope"])
 
 ``` r
 net = as_sfnetwork(r)
+
 p1 = net %>%  
   activate(nodes) %>%  
   st_as_sf() %>%  
@@ -144,6 +145,7 @@ path1 = net %>%
   activate("edges") %>%  
   mutate(weight = edge_length()) %>%  
   convert(to_spatial_shortest_paths, p1, p2)
+
 plot(path1)
 ```
 
@@ -155,5 +157,22 @@ mapview::mapview(st_as_sf(path1)) +
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
+
+``` r
+
+path2 = sfnetworks::st_shortest_paths(net, 1, 9) 
+path2 = convert(net, to_spatial_shortest_paths, 1, 9)
+class(path2)
+#> [1] "sfnetwork" "tbl_graph" "igraph"
+plot(path2)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-5.png)<!-- -->
+
+``` r
+plot(st_geometry(path2 %>% activate("edges")))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-6.png)<!-- -->
 
 ## Shortest path in Lisbon with sfnetworks

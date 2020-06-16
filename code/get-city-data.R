@@ -37,8 +37,20 @@ osm_data_z$slope = slope_matrix_weighted(m)
 plot(osm_data_z["slope"])
 summary(osm_data_z$slope)
 
-# net_3d = sfnetworks::as_sfnetwork(osm_data_z) # fails
+net_3d = sfnetworks::as_sfnetwork(osm_data_z) # fails
 net_3d = sfnetworks::as_sfnetwork(sf::st_zm(osm_data_z)) # fails
+osm_data_z2 = sf::st_as_sf(
+  data.frame(stringsAsFactors = FALSE,
+    osm_id = osm_data_z$osm_id,
+    highway = osm_data_z$highway,
+    slope = osm_data_z$slope
+  ),
+  geometry = sf::st_geometry(osm_data_z)
+)
+net_3d = sfnetworks::as_sfnetwork(sf::st_zm(osm_data_z2)) # fails
+net_3d = sfnetworks::as_sfnetwork(sf::st_zm(osm_data_z2)[1:9, ]) # fails
+
+
 
 osm_data_z$slope = slopes::slope_matrix_weighted()
 

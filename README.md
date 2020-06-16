@@ -166,13 +166,24 @@ plot(path2)
 
 # plot to see difference in routes
 #plot(net, col = "lightgrey")  # How do we plot this with the Avg_Slope as a variable
-plot(r["Avg_Slope"], reset = F, lwd=3)
-plot(path1, add=T)
-plot(path2, add=T, col="green")
+plot(r["Avg_Slope"], reset = F, lwd=5)
+plot(path1, add=T, lwd = 3, col = "red")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
+
+``` r
+plot(r["Avg_Slope"], reset = F, lwd=5)
+# less hilly route
+plot(path2, add=T, col="green", lwd = 3)
 plot(p1, add=T, col="darkred")
 plot(p2, add=T, col="darkred")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+# Next step
+
+Gradient deterrence function.
 
 ## Shortest path in Lisbon with sfnetworks

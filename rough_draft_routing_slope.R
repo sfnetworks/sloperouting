@@ -48,4 +48,5 @@ plot(p1, add=T, col="darkred")
 plot(p2, add=T, col="darkred")
 
 
-
+x <- net %>%
+  activate("edges")

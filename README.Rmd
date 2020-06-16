@@ -1,0 +1,146 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# sloperouting
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of sloperouting is to provide a place to share code/data for slope sensitive routing.
+
+The starting point is having the latest version of `sfnetworks` installed:
+
+```{r, eval=FALSE}
+remotes::install_github("luukvdmeer/sfnetworks")
+remotes::install_github("itsleeds/slopes")
+remotes::install_github("itsleeds/od")
+```
+
+```{r}
+library(sfnetworks)
+library(tidygraph)
+library(dplyr)
+library(sf)
+```
+
+Test the package is working:
+
+```{r, eval=FALSE}
+net = as_sfnetwork(roxel, directed = FALSE)
+class(net)
+sf::st_crs(net)
+net_proj = sf::st_transform(net, 3035)
+p1 = net_proj %>%  
+  activate(nodes) %>%  
+  st_as_sf() %>%  
+  slice(1)  
+p2 = net_proj %>%  
+  activate(nodes) %>%  
+  st_as_sf() %>%  
+  slice(9)  
+p3 = sf::st_sfc(  
+  sf::st_geometry(p1)[[1]] + sf::st_point(c(500, 500)),  
+  crs = sf::st_crs(p1)  
+)  
+p4 = sf::st_sfc(  
+  sf::st_geometry(p2)[[1]] + sf::st_point(c(-500, -500)),  
+  crs = sf::st_crs(p2)  
+)  
+net_proj %>%  
+  activate("edges") %>%  
+  mutate(weight = edge_length()) %>%  
+  convert(to_spatial_shortest_paths, p3, p4) ->  
+  net_sp  
+par(mar = c(1,1,1,1), bg = NA)  
+plot(net_proj)  
+plot(net_sp,
+     col = "Orange", lwd = 1.5, cex = 1.5,
+     add = T)
+```
+
+
+
+```{r}
+r = slopes::lisbon_road_segments
+class(r)
+names(r)
+plot(r["Avg_Slope"])
+```
+
+
+
+
+```{r, eval=FALSE, echo=FALSE}
+v = sf::st_coordinates(r)
+nrow(v)
+set.seed(5)
+p = v[sample(nrow(v), size = 3), ]
+head(p)
+l = od::points_to_odl(p[, 1:2], crs = st_crs(r), interzone_only = TRUE)
+
+
+net = as_sfnetwork(r)
+net_t = net %>%
+  activate("edges") %>%
+  dplyr::mutate(length = sf::st_length(.))
+class(net_t)
+igraph::shortest_paths(graph = net_t, 1, 200)$vpath
+
+l_start_points = lwgeom::st_startpoint(l)
+l_end_points = lwgeom::st_endpoint(l)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+r1 = stplanr::route_local(sln = sln, from = l_start_points[1], to = l_end_points[2])
+plot(r1$geometry, col = "red", lwd = 5)
+
+# calculate shortest paths
+sp = stplanr::route(
+  l = l,
+  route_fun = stplanr::route_local,
+  sln = sln
+)
+
+sln = stplanr::SpatialLinesNetwork(r)
+sln = stplanr::sln_clean_graph(sln)
+nrow(r)
+nrow(sln@sl) # simple graph
+v = sf::st_coordinates(sln@sl)
+nrow(v)
+set.seed(8)
+p = v[sample(nrow(v), size = ), ]
+p = st_sample(st_convex_hull(st_union(sln@sl)), size = 3)
+l = od::points_to_odl(st_coordinates(p), crs = st_crs(r), interzone_only = TRUE)
+l$v = 1
+l = od::od_oneway(l)
+plot(sln@sl$geometry)
+plot(p, add = TRUE)
+```
+
+
+
+
+```{r, eval=FALSE, echo=FALSE}
+net_stplanr = stplanr::SpatialLinesNetwork(roxel)
+isS4(net_stplanr)
+slotNames(net_stplanr)
+net_stplanr@g
+net_stplanr@nb[1:2]
+
+
+
+net_dodgr
+```
+
+
+

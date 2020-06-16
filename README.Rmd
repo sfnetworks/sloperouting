@@ -33,9 +33,11 @@ library(dplyr)
 library(sf)
 ```
 
+# Example with package data
+
 Test the package is working:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 net = as_sfnetwork(roxel, directed = FALSE)
 class(net)
 sf::st_crs(net)
@@ -68,15 +70,42 @@ plot(net_sp,
      add = T)
 ```
 
-
+# Example with data from Lisbon
 
 ```{r}
+library(sfnetworks)
+library(tidygraph)
+library(dplyr)
+library(sf)
 r = slopes::lisbon_road_segments
+sf::st_is_longlat(r)
 class(r)
 names(r)
 plot(r["Avg_Slope"])
+net = as_sfnetwork(r)
+p1 = net %>%  
+  activate(nodes) %>%  
+  st_as_sf() %>%  
+  slice(1)  
+p2 = net %>%  
+  activate(nodes) %>%  
+  st_as_sf() %>%  
+  slice(9)
+mapview::mapview(p1) + mapview::mapview(p2)
+path1 = net %>%  
+  activate("edges") %>%  
+  mutate(weight = edge_length()) %>%  
+  convert(to_spatial_shortest_paths, p1, p2)
+plot(path1)
+mapview::mapview(st_as_sf(path1)) +
+  mapview::mapview(p1) + mapview::mapview(p2)
 ```
 
+## Shortest path in Lisbon with sfnetworks
+
+```{r}
+
+```
 
 
 
@@ -87,7 +116,6 @@ set.seed(5)
 p = v[sample(nrow(v), size = 3), ]
 head(p)
 l = od::points_to_odl(p[, 1:2], crs = st_crs(r), interzone_only = TRUE)
-
 
 net = as_sfnetwork(r)
 net_t = net %>%
@@ -101,9 +129,10 @@ l_end_points = lwgeom::st_endpoint(l)
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
+sln = stplanr::SpatialLinesNetwork(r)
 r1 = stplanr::route_local(sln = sln, from = l_start_points[1], to = l_end_points[2])
 plot(r1$geometry, col = "red", lwd = 5)
-
+mapview::mapview(r1)
 # calculate shortest paths
 sp = stplanr::route(
   l = l,

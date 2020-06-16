@@ -110,7 +110,8 @@ path2 = net %>%
 plot(path2)
 
 # plot to see difference in routes
-plot(net, col = "lightgrey")  # How do we plot this with the Avg_Slope as a variable
+#plot(net, col = "lightgrey")  # How do we plot this with the Avg_Slope as a variable
+plot(r["Avg_Slope"], reset = F, lwd=3)
 plot(path1, add=T)
 plot(path2, add=T, col="green")
 plot(p1, add=T, col="darkred")

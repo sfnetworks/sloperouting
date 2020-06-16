@@ -14,10 +14,12 @@ plot(r["Avg_Slope"])
 # transform to sf network
 net = as_sfnetwork(r)
 st_crs(net)
+
 p1 = net %>%
   activate(nodes) %>%
   st_as_sf() %>%
   slice(1)
+
 p2 = net %>%
   activate(nodes) %>%
   st_as_sf() %>%
@@ -41,12 +43,11 @@ path2 = net %>%
 plot(path2)
 
 # plot to see difference in routes
-plot(net, col = "lightgrey")  # How do we plot this with the Avg_Slope as a variable
-plot(path1, add=T)
+#plot(net, col = "lightgrey")  # How do we plot this with the Avg_Slope as a variable
+plot(r["Avg_Slope"], reset = F, lwd=3)
+plot(path1, add=T, col="red")
 plot(path2, add=T, col="green")
 plot(p1, add=T, col="darkred")
 plot(p2, add=T, col="darkred")
 
 
-x <- net %>%
-  activate("edges")

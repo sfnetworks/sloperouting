@@ -83,6 +83,7 @@ class(r)
 names(r)
 plot(r["Avg_Slope"])
 net = as_sfnetwork(r)
+
 p1 = net %>%  
   activate(nodes) %>%  
   st_as_sf() %>%  
@@ -96,6 +97,7 @@ path1 = net %>%
   activate("edges") %>%  
   mutate(weight = edge_length()) %>%  
   convert(to_spatial_shortest_paths, p1, p2)
+
 plot(path1)
 #mapview::mapview(st_as_sf(path1)) +
 #  mapview::mapview(p1) + mapview::mapview(p2)

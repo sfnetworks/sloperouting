@@ -126,6 +126,7 @@ plot(r["Avg_Slope"])
 
 ``` r
 net = as_sfnetwork(r)
+
 p1 = net %>%  
   activate(nodes) %>%  
   st_as_sf() %>%  
@@ -134,24 +135,42 @@ p2 = net %>%
   activate(nodes) %>%  
   st_as_sf() %>%  
   slice(9)
-mapview::mapview(p1) + mapview::mapview(p2)
+#mapview::mapview(p1) + mapview::mapview(p2)
+path1 = net %>%  
+  activate("edges") %>%  
+  mutate(weight = edge_length()) %>%  
+  convert(to_spatial_shortest_paths, p1, p2)
+
+plot(path1)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
 ``` r
-path1 = net %>%  
-  activate("edges") %>%  
-  mutate(weight = edge_length()) %>%  
+#mapview::mapview(st_as_sf(path1)) +
+#  mapview::mapview(p1) + mapview::mapview(p2)
+
+
+# Change the weight so that it is a product of edge_length and average slope.
+# I am not sure how to access the edge columns to see if this worked
+path2 = net %>%
+  activate("edges") %>%
+  mutate(weight = edge_length() * Avg_Slope) %>%
   convert(to_spatial_shortest_paths, p1, p2)
-plot(path1)
+plot(path2)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
 
 ``` r
-mapview::mapview(st_as_sf(path1)) +
-  mapview::mapview(p1) + mapview::mapview(p2)
+
+# plot to see difference in routes
+#plot(net, col = "lightgrey")  # How do we plot this with the Avg_Slope as a variable
+plot(r["Avg_Slope"], reset = F, lwd=3)
+plot(path1, add=T)
+plot(path2, add=T, col="green")
+plot(p1, add=T, col="darkred")
+plot(p2, add=T, col="darkred")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
